@@ -225,7 +225,28 @@ heroes.forEach(hero=>{
 
     btn.className="hero-btn";
     btn.textContent=hero;
+btn.oncontextmenu=(e)=>{
 
+    e.preventDefault();
+
+    if(immortalHeroes.includes(hero)){
+
+        immortalHeroes =
+        immortalHeroes.filter(
+            h => h !== hero
+        );
+
+        btn.style.color = "white";
+        btn.style.fontWeight = "normal";
+
+    }else{
+
+        immortalHeroes.push(hero);
+
+        btn.style.color = "#ff4444";
+        btn.style.fontWeight = "bold";
+    }
+};
     btn.onclick=()=>{
 
         if(selectedHero===hero){
