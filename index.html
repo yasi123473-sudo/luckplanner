@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>운빨존많겜 배치표</title>
+
+<style>
+body{
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    display:flex;
+    height:100vh;
+}
+
+.sidebar{
+    width:260px;
+    background:#222;
+    padding:10px;
+    overflow-y:auto;
+}
+
+.sidebar h2{
+    margin-top:0;
+}
+
+.hero-btn{
+    width:100%;
+    margin-bottom:5px;
+    padding:10px;
+    border:none;
+    background:#333;
+    color:white;
+    cursor:pointer;
+    border-radius:5px;
+    transition:0.2s;
+}
+
+.hero-btn:hover{
+    background:#555;
+}
+
+.hero-btn.selected{
+    background:#ff9800;
+    color:black;
+    font-weight:bold;
+}
+
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+.topbar{
+    background:#1b1b1b;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.topbar button{
+    padding:10px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.selected-info{
+    margin-left:20px;
+    font-weight:bold;
+    color:#ffd54f;
+}
+
+.board-wrap{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.board{
+    display:grid;
+    grid-template-columns:repeat(6,120px);
+    grid-template-rows:repeat(3,120px);
+    gap:5px;
+}
+
+.cell{
+    background:#2b2b2b;
+    border:1px solid #555;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:5px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>영웅 목록</h2>
+
+<div id="heroList"></div>
+
+</div>
+
+<div class="main">
+
+<div class="topbar">
+
+<button onclick="saveBoard()">저장</button>
+
+<button onclick="loadBoard()">불러오기</button>
+
+<button onclick="resetBoard()">초기화</button>
+
+<div class="selected-info" id="selectedInfo">
+선택된 영웅 : 없음
+</div>
+
+</div>
+
+<div class="board-wrap">
+<div class="board" id="board"></div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const heroes = [
+"닌자",
+"블롭",
+"중력자탄",
+"냥법사",
+"펄스생성기",
+"드래곤",
+"밤바",
+"콜디",
+"랜슬롯",
+"아이언미야옹",
+"모노폴리맨",
+"마마",
+"개구리 왕자",
+"배트맨",
+"오크주술사",
+"베인",
+"인디",
+"와트",
+"타르",
+"로켓츄",
+"우치",
+"지지",
+"마스터 쿤",
+"초나",
+"펭귄악사",
+"헤일리",
+"아토",
+"로카",
+"골라조",
+"채드",
+"레이"
+];
+
+let selectedHero = null;
+
+const heroList = document.getElementById("heroList");
+const selectedInfo = document.getElementById("selectedInfo");
+
+heroes.forEach(hero=>{
+
+    const btn=document.createElement("button");
+
+    btn.className="hero-btn";
+    btn.textContent=hero;
+
+    btn.onclick=()=>{
+
+        if(selectedHero===hero){
+
+            selectedHero=null;
+
+            document
+            .querySelectorAll(".hero-btn")
+            .forEach(x=>x.classList.remove("selected"));
+
+            selectedInfo.textContent =
+            "선택된 영웅 : 없음";
+
+            return;
+        }
+
+        document
+        .querySelectorAll(".hero-btn")
+        .forEach(x=>x.classList.remove("selected"));
+
+        btn.classList.add("selected");
+
+        selectedHero=hero;
+
+        selectedInfo.textContent =
+        "선택된 영웅 : " + hero;
+    };
+
+    heroList.appendChild(btn);
+});
+
+const board=document.getElementById("board");
+
+for(let i=0;i<18;i++){
+
+    const cell=document.createElement("div");
+
+    cell.className="cell";
+
+    cell.onclick=()=>{
+
+        if(!selectedHero) return;
+
+        cell.textContent=selectedHero;
+    };
+
+    cell.oncontextmenu=(e)=>{
+
+        e.preventDefault();
+
+        cell.textContent="";
+    };
+
+    board.appendChild(cell);
+}
+
+function saveBoard(){
+
+    const data =
+    [...document.querySelectorAll(".cell")]
+    .map(x=>x.textContent);
+
+    localStorage.setItem(
+        "luck_board",
+        JSON.stringify(data)
+    );
+
+    alert("저장 완료");
+}
+
+function loadBoard(){
+
+    const data =
+    JSON.parse(
+        localStorage.getItem("luck_board")
+    );
+
+    if(!data) return;
+
+    document
+    .querySelectorAll(".cell")
+    .forEach((cell,i)=>{
+
+        cell.textContent =
+        data[i];
+    });
+
+    alert("불러오기 완료");
+}
+
+function resetBoard(){
+
+    if(!confirm("배치를 초기화할까요?"))
+        return;
+
+    document
+    .querySelectorAll(".cell")
+    .forEach(cell=>{
+
+        cell.textContent="";
+    });
+}
+
+</script>
+
+</body>
+</html>
+@media (max-width: 900px){
+
+    .container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        height:250px;
+    }
+
+    .board{
+        grid-template-columns:repeat(6,50px);
+        grid-template-rows:repeat(3,50px);
+    }
+
+    .cell{
+        font-size:10px;
+    }
+}
